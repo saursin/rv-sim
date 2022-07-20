@@ -1,5 +1,8 @@
 #pragma once
 #include "rvdefs.h"
+#include "mem.h"
+
+#include <vector>
 
 namespace rvsim {
 
@@ -15,8 +18,20 @@ public:
 };
 
 
+
+
+
+
+
 class Core 
 {
+public:
+    Core();
+    void step();
+    
+private:
+    RegFile rf_;
+    Reg pc_;
 
 };
 

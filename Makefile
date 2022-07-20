@@ -27,4 +27,7 @@ $(BIN_DIR)/rvsim: $(OBJS)
 	$(CC) $(LFLAGS) -o $@ $^
 
 
+.PHONY: clean
+clean:
+	rm -rf build/
 

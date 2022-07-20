@@ -3,7 +3,7 @@
 
 using namespace rvsim;
 
-Memory::Memory(unsigned base_addr, unsigned size, bool write_protect=false):
+Memory::Memory(uint64_t base_addr, uint64_t size, bool write_protect=false):
     is_write_protected_(write_protect),
     base_addr_(base_addr),
     size_(size)
@@ -44,67 +44,68 @@ void Memory::erase(uint8_t erase_val=0x00)
 }
 
 
-void Memory::fetch(uint8_t *buf, const uint32_t start_addr, const uint32_t buf_sz)
+void Memory::read(uint8_t *data, uint64_t addr, uint64_t size)
+
 {
     // exception message buffer
     char except_buf[50];
 
-    uint32_t rel_start_addr = start_addr - base_addr_;    // relative to current memory block
+    uint32_t rel_start_addr = addr - base_addr_;    // relative to current memory block
 
-    for (uint32_t i = 0; i < buf_sz; i++)
+    for (uint32_t i = 0; i < size; i++)
     {
         // get index
         uint32_t indx = rel_start_addr + i;
         
         if (!(indx < size_))    // check bounds
         {
-            sprintf(except_buf, "invalid fetch address [0x%08x]", start_addr + i);
+            sprintf(except_buf, "invalid fetch address [0x%08lx]", addr + i);
             throw except_buf;
         }
 
         // copy from mem
-        buf[i] = mem_[indx];
+        data[i] = mem_[indx];
     }
 }
 
 
-void Memory::store(uint8_t *buf, const uint32_t start_addr, const uint32_t buf_sz)
+void Memory::write(uint8_t *data, uint64_t addr, uint64_t size)
 {
     if(is_write_protected_)
     {
         char except_buf[70];
-        sprintf(except_buf, "Attempted to store in a write-protected memory @ address [0x%08x]", start_addr);
+        sprintf(except_buf, "Attempted to store in a write-protected memory @ address [0x%08lx]", addr);
         throw except_buf;
     }
 
     // exception message buffer
     char except_buf[50];
 
-    uint32_t rel_start_addr = start_addr - base_addr_;    // relative to current memory block
+    uint32_t rel_start_addr = addr - base_addr_;    // relative to current memory block
 
-    for (uint32_t i = 0; i < buf_sz; i++)
+    for (uint32_t i = 0; i < size; i++)
     {
         // get index
         uint32_t indx = rel_start_addr + i;
         
         if (!(indx < size_))    // check bounds
         {
-            sprintf(except_buf, "invalid store address [0x%08x]", start_addr + i);
+            sprintf(except_buf, "invalid store address [0x%08lx]", addr + i);
             throw except_buf;
         }
 
         // copy to mem
-        mem_[indx] = buf[i];
+        mem_[indx] = data[i];
     }
 }
 
 
-uint32_t Memory::get_size() 
+uint64_t Memory::get_size()
 { 
     return size_;
 }
 
-uint32_t Memory::get_base_addr() 
+uint64_t Memory::get_base_addr()
 {
     return base_addr_;
 }
