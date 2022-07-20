@@ -1,6 +1,7 @@
 #include "mem.h"
 #include <iostream>
 
+using namespace rvsim;
 
 Memory::Memory(unsigned base_addr, unsigned size, bool write_protect=false):
     is_write_protected_(write_protect),

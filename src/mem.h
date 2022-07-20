@@ -1,6 +1,8 @@
 #pragma once
 #include <stdint.h>
 
+namespace rvsim {
+
 class Memory
 {
 public:
@@ -78,3 +80,6 @@ private:
     uint32_t size_;
 
 };
+
+
+} // namespace rvsim
