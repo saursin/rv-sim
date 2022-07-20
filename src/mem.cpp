@@ -45,7 +45,6 @@ void Memory::erase(uint8_t erase_val=0x00)
 
 
 void Memory::read(uint8_t *data, uint64_t addr, uint64_t size)
-
 {
     // exception message buffer
     char except_buf[50];
@@ -105,7 +104,50 @@ uint64_t Memory::get_size()
     return size_;
 }
 
+
 uint64_t Memory::get_base_addr()
 {
     return base_addr_;
+}
+
+
+/////////////////////////////////////////////////////////////////////
+// MMU
+
+void MMU::attach(MemDevice *m)
+{
+    /* perform necessary checks here */
+    mems_.push_back(m);
+}
+
+
+MemDevice * MMU::lookup(uint64_t addr)
+{
+    for(unsigned i=0; i< mems_.size(); i++)
+    {
+        MemDevice *md = mems_[i];
+        if(addr >= md->get_base_addr() && addr <= (md->get_base_addr()+md->get_size()-1))
+            return md;
+    }
+    return nullptr;
+}
+
+
+void MMU::read(uint8_t *data, uint64_t addr, uint64_t size)
+{
+    MemDevice *m = lookup(addr);
+    if(m)
+        m->read(data, addr, size);
+    else
+        throw "Read request from unknown memory";
+}
+
+
+void MMU::write(uint8_t *data, uint64_t addr, uint64_t size)
+{
+    MemDevice *m = lookup(addr);
+    if(m)
+        m->write(data, addr, size);
+    else
+        throw "Write request to unknown memory";
 }

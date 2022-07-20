@@ -1,5 +1,6 @@
 #pragma once
 #include <stdint.h>
+#include <vector>
 
 namespace rvsim {
 
@@ -98,48 +99,15 @@ private:
 class MMU
 {
 public:
-    void attach(MemDevice &m);
-    void read(unsigned char *data, uint64_t addr, uint64_t size);
-    void write(unsigned char *data, uint64_t addr, uint64_t size);
-    
+    void attach(MemDevice *m);
+
+    MemDevice * lookup(uint64_t addr);
+    void read(uint8_t *data, uint64_t addr, uint64_t size);
+    void write(uint8_t *data, uint64_t addr, uint64_t size);
+
+private:
+    std::vector<MemDevice *> mems_;
 };
-
-
-// class MMU 
-// {
-// public:
-//     std::vector<Memory *> mems_;
-
-// private:
-//     /**
-//      * @brief fetch bytes
-//      * 
-//      * @param buf byte buffer 
-//      * @param start_addr starting address
-//      * @param buf_sz buffer size
-//      * @throws char* invalid address exception
-//      */
-//     void fetch(uint8_t *buf, const uint32_t start_addr, const uint32_t buf_sz);
-
-//     /**
-//      * @brief store bytes
-//      * 
-//      * @param buf byte buffer 
-//      * @param start_addr starting address
-//      * @param buf_sz buffer size
-//      * @throws char* invalid address exception
-//      */
-//     void store(uint8_t *buf, const uint32_t start_addr, const uint32_t buf_sz);
-
-//     /**
-//      * @brief 
-//      * 
-//      */
-
-// };
-
-
-
 
 
 } // namespace rvsim
