@@ -1,4 +1,6 @@
 #include "core.h"
+#include "log.h"
+
 #include <iostream>
 
 using namespace rvsim;
@@ -53,11 +55,14 @@ void Core::step()
     // fetch
     Word_alias w;
     mmu_.read(w.byte, pc_, 4);
-    printf("Core %d Fetch : [%08x] %08x\n", id_, pc_, w.word);
+    log("[Core %d] Fetch %08x: %08x\n", id_, pc_, w.word);
     pc_ += 4;
 
-    // decode    
+    // decode
     RVInstr instr(w.word);
+    
+    // if (instr.opcode == OPCODE_ADDI)
+
     
 
     
