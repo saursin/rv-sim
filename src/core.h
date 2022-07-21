@@ -28,7 +28,7 @@ struct RVInstr
     uint8_t opcode()
     {
         // opcode in bits 6..0
-        return ins && 0x7f;
+        return ins & 0x7f;
     }
 
     uint8_t rd()
@@ -86,7 +86,7 @@ struct RVInstr
     uint64_t imm_u()
     {
         // imm[31:12] = inst[31:12]
-        return (int64_t)(int32_t)(ins & 0xfffff999);
+        return (int64_t)(int32_t)(ins & 0xfffff000);
     }
 
     uint64_t imm_j()

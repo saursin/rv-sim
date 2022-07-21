@@ -12,9 +12,8 @@ OBJS = $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRCS_))
 SRCS = $(patsubst %, $(SRC_DIR)/%, $(SRCS_))
 
 CC := g++
-CFLAGS := -Wall -g -DLOGGER
+CFLAGS := -Wall -g -DLOGGER_ALL -DLOG_REGVIEW
 LFLAGS := 
-
 
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp

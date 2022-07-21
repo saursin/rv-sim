@@ -3,5 +3,4 @@
 
 _start:
 	li x1, 0x001122330
-	addi x2, x1, 55
 

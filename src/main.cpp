@@ -5,6 +5,9 @@
 
 using namespace rvsim;
 
+uint64_t sim_cycles=0;
+extern uint64_t sim_cycles;
+
 int main(int argc, char ** argv) 
 {
     std::unique_ptr<Memory> rom(new Memory(0x00000000, 64*1024, false));
@@ -27,7 +30,7 @@ int main(int argc, char ** argv)
     // }
 
     rom->loadBinImage("build/rom.bin", 0x00000000);
-    log("loading binary image...\n");
+    log_info("loading binary image...\n");
 
     rom->set_write_protect(true);
     
@@ -40,9 +43,10 @@ int main(int argc, char ** argv)
     c.attach_memdevice(ram.get());
 
 
-    for(uint64_t cyc=0; cyc<20; cyc++)
+    for(uint64_t cyc=0; cyc<10; cyc++)
     {
         c.step();
+        sim_cycles++;
     }
 
     return 0;
