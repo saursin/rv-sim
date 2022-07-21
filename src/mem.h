@@ -87,6 +87,14 @@ public:
      */
     uint64_t get_base_addr();
 
+    /**
+     * @brief Load a binary image file in memory
+     * 
+     * @param filename filename
+     * @param destination destination address
+     */
+    void loadBinImage(const char* filename, uint64_t destination);
+
 private:
     uint8_t * mem_;
     bool is_write_protected_;

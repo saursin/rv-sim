@@ -1,5 +1,6 @@
 #include "mem.h"
 #include <iostream>
+#include <fstream>
 
 using namespace rvsim;
 
@@ -108,6 +109,23 @@ uint64_t Memory::get_size()
 uint64_t Memory::get_base_addr()
 {
     return base_addr_;
+}
+
+void Memory::loadBinImage(const char* filename, uint64_t destination)
+{
+  std::ifstream ifs(filename);
+  if (!ifs) {
+    std::cout << "error: " << filename << " not found" << std::endl;
+  }
+
+  ifs.seekg(0, ifs.end);
+  size_t size = ifs.tellg();
+  std::vector<uint8_t> content(size);
+  ifs.seekg(0, ifs.beg);
+  ifs.read((char*)content.data(), size);
+
+  this->erase();
+  this->write(content.data(), destination, size);
 }
 
 
