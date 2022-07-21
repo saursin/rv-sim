@@ -65,47 +65,49 @@ void Core::step()
         
     if (instr.opcode() == OPCODE_LUI)
     {
-        log_core(id_, "Execute PC=%08x: LUI: x%d = %08lx\n", pc_, instr.rd(), instr.imm_u());
+        log_core(id_, "PC=%08x: Execute LUI: x%d <= 0x%08lx\n", pc_, instr.rd(), instr.imm_u());
         rf_.write(instr.rd(), instr.imm_u());
     }
     else if(instr.opcode() == OPCODE_AUIPC)
     {
-        log_core(id_, "Execute AUIPC: x%d = %08lx + PC(%08x)\n", instr.rd(), instr.imm_u());
+        log_core(id_, "PC=%08x: Execute AUIPC: x%d <= 0x%08lx + PC(0x%08x)\n", pc_, instr.rd(), instr.imm_u());
         rf_.write(instr.rd(), instr.imm_u());
     }
     else if (instr.opcode() == OPCODE_ALU)
     {
-        switch(instr.func3())
+        if(instr.func3() == FUNC3_ADDI)
         {
-            // case FUNC3_ADDI:    rf_.write(instr.rd(),  rf_.read(instr.rs1()) + instr.imm_i()); break;
-            // case FUNC3_SLTI:    rf_.write(instr.rd(),  (rf_.read(instr.rs1()) < instr.imm_i()) ? 1 : 0); break;
-            // case FUNC3_ANDI:    rf_.write(instr.rd(),  rf_.read(instr.rs1()) & instr.imm_i()); break;
-            // case FUNC3_ORI:     rf_.write(instr.rd(),  rf_.read(instr.rs1()) | instr.imm_i()); break;
-            // case FUNC3_XORI:    rf_.write(instr.rd(),  rf_.read(instr.rs1()) ^ instr.imm_i()); break;
-
-            default: break;
+            log_core(id_, "PC=%08x: Execute ADDI: x%d <= x%d(0x%08x) + 0x%08lx\n", pc_, instr.rd(), instr.rs1(), rf_.read(instr.rs1()), instr.imm_i());
+            rf_.write(instr.rd(), rf_.read(instr.rs1()) + instr.imm_i());
+        }
+        else if(instr.func3() == FUNC3_ANDI)
+        {
+            log_core(id_, "PC=%08x: Execute ANDI: x%d <= x%d(0x%08x) & 0x%08lx\n", pc_, instr.rd(), instr.rs1(), rf_.read(instr.rs1()), instr.imm_i());
+            rf_.write(instr.rd(), rf_.read(instr.rs1()) & instr.imm_i());
+        }
+        else if(instr.func3() == FUNC3_ORI)
+        {
+            log_core(id_, "PC=%08x: Execute ORI: x%d <= x%d(0x%08x) | 0x%08lx\n", pc_, instr.rd(), instr.rs1(), rf_.read(instr.rs1()), instr.imm_i());
+            rf_.write(instr.rd(), rf_.read(instr.rs1()) | instr.imm_i());
+        }
+        else if(instr.func3() == FUNC3_XORI)
+        {
+            log_core(id_, "PC=%08x: Execute XORI: x%d <= x%d(0x%08x) ^ 0x%08lx\n", pc_, instr.rd(), instr.rs1(), rf_.read(instr.rs1()), instr.imm_i());
+            rf_.write(instr.rd(), rf_.read(instr.rs1()) ^ instr.imm_i());
         }
     }
 
     // Print register view
     #ifdef LOG_REGVIEW
-    log_core(id_, "======== Register View ========\n");
-    printf(" x0 (zero) : 0x%08x    x16 (a6)   : 0x%08x\n", rf_.read(0), rf_.read(16));
-    printf(" x1 (ra)   : 0x%08x    x17 (a7)   : 0x%08x\n", rf_.read(1), rf_.read(17));
-    printf(" x2 (sp)   : 0x%08x    x18 (s2)   : 0x%08x\n", rf_.read(2), rf_.read(18));
-    printf(" x3 (gp)   : 0x%08x    x19 (s3)   : 0x%08x\n", rf_.read(3), rf_.read(19));
-    printf(" x4 (tp)   : 0x%08x    x20 (s4)   : 0x%08x\n", rf_.read(4), rf_.read(20));
-    printf(" x5 (t0)   : 0x%08x    x21 (s5)   : 0x%08x\n", rf_.read(5), rf_.read(21));
-    printf(" x6 (t1)   : 0x%08x    x22 (s6)   : 0x%08x\n", rf_.read(6), rf_.read(22));
-    printf(" x7 (t2)   : 0x%08x    x23 (s7)   : 0x%08x\n", rf_.read(7), rf_.read(23));
-    printf(" x8 (s0/fp): 0x%08x    x24 (s8)   : 0x%08x\n", rf_.read(8), rf_.read(24));
-    printf(" x9 (s1)   : 0x%08x    x25 (s9)   : 0x%08x\n", rf_.read(9), rf_.read(25));
-    printf("x10 (a0)   : 0x%08x    x26 (s10)  : 0x%08x\n", rf_.read(10), rf_.read(26));
-    printf("x11 (a1)   : 0x%08x    x27 (s11)  : 0x%08x\n", rf_.read(11), rf_.read(27));
-    printf("x12 (a2)   : 0x%08x    x28 (t3)   : 0x%08x\n", rf_.read(12), rf_.read(28));
-    printf("x13 (a3)   : 0x%08x    x29 (t4)   : 0x%08x\n", rf_.read(13), rf_.read(29));
-    printf("x14 (a4)   : 0x%08x    x30 (t5)   : 0x%08x\n", rf_.read(14), rf_.read(30));
-    printf("x15 (a5)   : 0x%08x    x31 (t6)   : 0x%08x\n\n", rf_.read(15), rf_.read(31));
+    log_core(id_, "======== Register View ======================================================\n");
+    fprintf(stderr, "(zero) x0: 0x%08x  (fp/s0)  x8: 0x%08x     (a6) x16: 0x%08x     (s8) x24: 0x%08x\n", rf_.read(0), rf_.read(8),  rf_.read(16), rf_.read(24));
+    fprintf(stderr, "  (ra) x1: 0x%08x     (s1)  x9: 0x%08x     (a7) x17: 0x%08x     (s9) x25: 0x%08x\n", rf_.read(1), rf_.read(9),  rf_.read(17), rf_.read(25));
+    fprintf(stderr, "  (sp) x2: 0x%08x     (a0) x10: 0x%08x     (s2) x18: 0x%08x    (s10) x26: 0x%08x\n", rf_.read(2), rf_.read(10), rf_.read(18), rf_.read(26));
+    fprintf(stderr, "  (gp) x3: 0x%08x     (a1) x11: 0x%08x     (s3) x19: 0x%08x    (s11) x27: 0x%08x\n", rf_.read(3), rf_.read(11), rf_.read(19), rf_.read(27));
+    fprintf(stderr, "  (tp) x4: 0x%08x     (a2) x12: 0x%08x     (s4) x20: 0x%08x     (t3) x28: 0x%08x\n", rf_.read(4), rf_.read(12), rf_.read(20), rf_.read(28));
+    fprintf(stderr, "  (t0) x5: 0x%08x     (a3) x13: 0x%08x     (s5) x21: 0x%08x     (t4) x29: 0x%08x\n", rf_.read(5), rf_.read(13), rf_.read(21), rf_.read(29));
+    fprintf(stderr, "  (t1) x6: 0x%08x     (a4) x14: 0x%08x     (s6) x22: 0x%08x     (t5) x30: 0x%08x\n", rf_.read(6), rf_.read(14), rf_.read(22), rf_.read(30));
+    fprintf(stderr, "  (t2) x7: 0x%08x     (a5) x15: 0x%08x     (s7) x23: 0x%08x     (t6) x31: 0x%08x\n\n", rf_.read(7), rf_.read(15), rf_.read(23), rf_.read(31));
     #endif
 
     pc_ += 4;
