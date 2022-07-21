@@ -7,7 +7,7 @@ OBJ_DIR = build/obj
 $(shell mkdir -p build/obj)
 
 
-SRCS_ := main.cpp mem.cpp
+SRCS_ := main.cpp mem.cpp core.cpp
 OBJS = $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRCS_))
 SRCS = $(patsubst %, $(SRC_DIR)/%, $(SRCS_))
 
